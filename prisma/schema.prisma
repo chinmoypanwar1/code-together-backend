@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ContainerStates {
+  Running
+  Paused
+  Exited
+}
+
+enum TodoStates {
+  Pending
+  Done
+  Cancelled
+}
+
+model User {
+  user_id String @id @default(uuid())
+  username String 
+  email String @unique
+  password String
+  profile_picture_url String?
+  refresh_token String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  projects Project[]
+  projects_todos ProjectTodo[]
+}
+
+model Project {
+  project_id String @id @default(uuid())
+  name String
+  owner User @relation(fields: [owner_id], references: [user_id])
+  owner_id String
+  container Container @relation(fields: [container_id], references: [container_id])
+  container_id String @unique
+  dockerImage DockerImage @relation(fields: [dockerImage_id], references: [dockerImage_id])
+  dockerImage_id String
+  drawing Drawing @relation(fields: [drawing_id], references: [drawing_id])
+  drawing_id String @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  project_todos ProjectTodo[]
+}
+
+model Container {
+  container_id String @id @default(uuid())
+  dockerImage DockerImage @relation(fields: [dockerImage_id], references: [dockerImage_id])
+  dockerImage_id String
+  status ContainerStates
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  project Project?
+}
+
+model DockerImage {
+  dockerImage_id String @id @default(uuid())
+  name String
+  languages String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  projects Project[]
+  containers Container[]
+}
+
+model ProjectTodo {
+  todo_id String @id @default(uuid())
+  project Project @relation(fields: [project_id], references: [project_id])
+  project_id String
+  creator User @relation(fields: [creator_id], references: [user_id])
+  creator_id String
+  title String
+  content String
+  status TodoStates
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Drawing {
+  drawing_id String @id @default(uuid())
+  drawing_url String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  project Project?
+}
