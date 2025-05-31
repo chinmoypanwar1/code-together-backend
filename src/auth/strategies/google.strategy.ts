@@ -5,7 +5,7 @@ import googleOathConfig from '../config/google-oath.config';
 import { ConfigType } from '@nestjs/config';
 import { AuthService } from '../auth.service';
 
-export class GoogleStrategy extends PassportStrategy(Strategy) {
+export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(
     @Inject(googleOathConfig.KEY)
     private googleConfiguration: ConfigType<typeof googleOathConfig>,

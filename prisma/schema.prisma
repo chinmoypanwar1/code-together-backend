@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -47,8 +41,6 @@ model Project {
   container_id String @unique
   dockerImage DockerImage @relation(fields: [dockerImage_id], references: [dockerImage_id])
   dockerImage_id String
-  drawing Drawing @relation(fields: [drawing_id], references: [drawing_id])
-  drawing_id String @unique
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   project_todos ProjectTodo[]
@@ -58,6 +50,7 @@ model Container {
   container_id String @id @default(uuid())
   dockerImage DockerImage @relation(fields: [dockerImage_id], references: [dockerImage_id])
   dockerImage_id String
+  dockerContainer_id String
   status ContainerStates
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -68,6 +61,7 @@ model DockerImage {
   dockerImage_id String @id @default(uuid())
   name String
   languages String
+  image_id String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   projects Project[]
@@ -85,12 +79,4 @@ model ProjectTodo {
   status TodoStates
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-}
-
-model Drawing {
-  drawing_id String @id @default(uuid())
-  drawing_url String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  project Project?
 }

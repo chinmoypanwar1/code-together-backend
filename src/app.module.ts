@@ -8,6 +8,8 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { AccessTokenGuard } from './auth/guards/access-token/access-token.guard';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { DockerodeModule } from './dockerode/dockerode.module';
+import { ProjectModule } from './project/project.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
       isGlobal: true,
     }),
     CloudinaryModule,
+    DockerodeModule,
+    ProjectModule,
   ],
   controllers: [AppController],
   providers: [
