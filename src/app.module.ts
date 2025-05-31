@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { AccessTokenGuard } from './auth/guards/access-token/access-token.guard';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AccessTokenGuard } from './auth/guards/access-token/access-token.guard'
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [
