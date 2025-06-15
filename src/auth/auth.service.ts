@@ -31,7 +31,7 @@ export class AuthService {
         },
         {
           secret: process.env.ACCESS_TOKEN_SECRET,
-          expiresIn: '15m',
+          expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
         },
       ),
       this.jwtService.signAsync(
@@ -41,7 +41,7 @@ export class AuthService {
         },
         {
           secret: process.env.REFRESH_TOKEN_SECRET,
-          expiresIn: '7d',
+          expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
         },
       ),
     ]);
@@ -122,9 +122,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new ForbiddenException(
-        'No user exists with the following email. Please signup first.',
-      );
+      throw new ForbiddenException('Please enter correct email.');
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
@@ -218,7 +216,8 @@ export class AuthService {
         email: googleUser.email,
       },
     });
-    if (user) return user;
+    if (!user) return null;
+    return user;
   }
 
   async loginGoogle(googleUserId: string) {
@@ -239,8 +238,8 @@ export class AuthService {
     return {
       tokens: {
         accessToken,
-        refreshToken
-      }
+        refreshToken,
+      },
     };
   }
 }

@@ -11,7 +11,11 @@ type JwtPayload = {
 export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (req) => {
+          return req?.cookies?.accessToken || null;
+        },
+      ]),
       secretOrKey: process.env.ACCESS_TOKEN_SECRET || 'fallback_secret',
     });
   }

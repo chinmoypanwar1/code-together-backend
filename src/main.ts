@@ -4,9 +4,9 @@ import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    cors: { credentials: true, origin: process.env.FRONTEND_URL },
+    cors: { origin: process.env.FRONTEND_URL, credentials: true },
   });
-  await app.listen(process.env.PORT ?? 8080);
   app.use(cookieParser());
+  await app.listen(process.env.PORT ?? 8080);
 }
 bootstrap();

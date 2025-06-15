@@ -39,10 +39,7 @@ export class AuthController {
 
   @Public()
   @Post('/local/login')
-  async loginLocal(
-    @Body() loginDto: LoginDto,
-    @Res({ passthrough: true }) response: Response,
-  ) {
+  async loginLocal(@Body() loginDto: LoginDto, @Res() response: Response) {
     const tokens = await this.authService.loginLocal(loginDto);
     response.cookie('accessToken', `${tokens.tokens.accessToken}`, {
       maxAge: 900000,
@@ -50,6 +47,11 @@ export class AuthController {
     response.cookie('refreshToken', `${tokens.tokens.refreshToken}`, {
       httpOnly: true,
       maxAge: 900000,
+    });
+    return response.send({
+      data: '',
+      message: 'Login Successful',
+      success: 'Success',
     });
   }
 
@@ -80,6 +82,7 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
+    console.log('The tokens are being refreshed');
     const user = req.user;
     if (!user || !user['user_id'] || !user['refreshToken']) {
       throw new Error('User not found');
@@ -105,11 +108,11 @@ export class AuthController {
   @Public()
   @UseGuards(GoogleAuthGuard)
   @Get('/google/callback')
-  async googleCallback(
-    @Req() req,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    const tokens = await this.authService.loginGoogle(req.user.user_id);
+  async googleCallback(@Req() req, @Res() response: Response) {
+    if (!req.user.isRegistered) {
+      return response.redirect(`${process.env.FRONTEND_URL}/login/failed`);
+    }
+    const tokens = await this.authService.loginGoogle(req.user.user?.user_id);
     response.cookie('accessToken', `${tokens.tokens.accessToken}`, {
       maxAge: 900000,
     });
@@ -117,5 +120,6 @@ export class AuthController {
       httpOnly: true,
       maxAge: 900000,
     });
+    return response.redirect(`${process.env.FRONTEND_URL}/dashboard`);
   }
 }

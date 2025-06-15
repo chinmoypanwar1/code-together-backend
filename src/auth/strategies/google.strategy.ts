@@ -30,6 +30,9 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       lastName: profile.name.familyName,
       password: '',
     });
-    return user;
+    return {
+      user,
+      isRegistered: !!user,
+    };
   }
 }

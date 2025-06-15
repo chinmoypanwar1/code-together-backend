@@ -99,6 +99,12 @@ export class UsersService {
       where: {
         user_id: userId,
       },
+      select: {
+        user_id: true,
+        username: true,
+        email: true,
+        profile_picture_url: true,
+      },
     });
     if (!userExists) {
       throw new ForbiddenException('Please register yourself first.');
@@ -112,7 +118,12 @@ export class UsersService {
       userExists.profile_picture_url = optimizedUrl;
     }
     const response = {
-      data: userExists,
+      data: {
+        userId: userExists.user_id,
+        username: userExists.username,
+        profilePictureUrl: userExists.profile_picture_url,
+        email: userExists.email,
+      },
       message: 'User Data fetched successfully',
       success: 'Success',
     };
