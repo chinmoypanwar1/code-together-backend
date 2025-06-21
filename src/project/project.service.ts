@@ -12,7 +12,7 @@ export class ProjectService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly docker: DockerodeService,
-  ) {}
+  ) { }
 
   async getProjectDetails(user_id: string) {
     // Check if user exists or not
@@ -34,10 +34,17 @@ export class ProjectService {
       select: {
         project_id: true,
         name: true,
-        dockerImage_id: true,
         dockerImage: {
           select: {
             languages: true,
+          },
+        },
+        project_todos: {
+          select: {
+            todo_id: true,
+            title: true,
+            content: true,
+            status: true,
           },
         },
       },
@@ -62,7 +69,7 @@ export class ProjectService {
     if (!imageInDB) {
       throw new ForbiddenException('Given template could not be found');
     }
-    // Check if image exists in Docker
+    // Check if image exists in Docker by Id
     const imageInDocker = await this.docker
       .getInstance()
       .getImage(imageInDB.name);
@@ -78,6 +85,7 @@ export class ProjectService {
       },
     });
     if (existingProject) {
+      console.log(existingProject);
       throw new ForbiddenException(
         'A project already exists with the following name',
       );
@@ -120,8 +128,31 @@ export class ProjectService {
       );
     }
 
+    const projectDetails = await this.prisma.project.findUnique({
+      where: {
+        project_id: projectInDB.project_id,
+      },
+      select: {
+        project_id: true,
+        name: true,
+        dockerImage: {
+          select: {
+            languages: true,
+          },
+        },
+        project_todos: {
+          select: {
+            todo_id: true,
+            title: true,
+            content: true,
+            status: true,
+          },
+        },
+      },
+    });
+
     const response = {
-      data: projectInDB,
+      data: projectDetails,
       message: 'Project Created Successfully',
       success: 'Success',
     };

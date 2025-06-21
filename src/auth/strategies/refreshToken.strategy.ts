@@ -17,6 +17,10 @@ export class RefreshTokenStrategy extends PassportStrategy(
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req) => {
+          console.log(
+            'The cookies have refreshToken such as: ',
+            req?.cookies?.refreshToken,
+          );
           return req?.cookies?.refreshToken || null;
         },
       ]),

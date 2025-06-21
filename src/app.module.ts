@@ -10,6 +10,8 @@ import { AccessTokenGuard } from './auth/guards/access-token/access-token.guard'
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { DockerodeModule } from './dockerode/dockerode.module';
 import { ProjectModule } from './project/project.module';
+import { TodosModule } from './todos/todos.module';
+import { ImageModule } from './image/image.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { ProjectModule } from './project/project.module';
     CloudinaryModule,
     DockerodeModule,
     ProjectModule,
+    TodosModule,
+    ImageModule,
   ],
   controllers: [AppController],
   providers: [
