@@ -6,6 +6,8 @@ import {
 import { DockerodeService } from 'src/dockerode/dockerode.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProjectDto } from './dto/create-project.dto';
+import * as fs from 'fs';
+import path from 'path';
 
 @Injectable()
 export class ProjectService {
@@ -91,9 +93,25 @@ export class ProjectService {
       );
     }
 
+    // Generate host path (e.g., /data/user_123/project_myapp)
+    const hostPath = path.join(
+      '/code-together',
+      '/user-data',
+      `user_${user_id}`,
+      `project_${createProjectDto.project_name}`,
+    );
+
+    // Create host directory
+    if (!fs.existsSync(hostPath)) {
+      fs.mkdirSync(hostPath, { recursive: true });
+    }
+
     // Create the docker container
     const dockerContainer = await this.docker.getInstance().createContainer({
       Image: imageInDB.name,
+      HostConfig: {
+        Binds: [`${hostPath}:/workspace`],
+      },
     });
     if (!dockerContainer) {
       throw new InternalServerErrorException('Container creation failed');
@@ -203,6 +221,17 @@ export class ProjectService {
         },
       },
     });
+
+    const hostPath = path.join(
+      '/code-together',
+      'user-data',
+      `user_${user_id}`,
+      `project_${project_id}`,
+    );
+
+    if (fs.existsSync(hostPath)) {
+      fs.rmSync(hostPath, { recursive: true });
+    }
 
     const containerId = project?.container.dockerContainer_id;
     if (!containerId) {
